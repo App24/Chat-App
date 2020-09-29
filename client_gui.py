@@ -13,9 +13,7 @@ my_username=""
 def validatePort(char, entry_value):
     chars=entry_value[:-1] #Selects all the text in the textbox except the last character
     if not char.isdigit():
-        """if entered char is not a digit or is not "." or is not "-" then return false.
-           If the entered char is "." and there is already a "." in text, return false.
-           If the entered char is "-" and there is already a "-" in text, return false"""
+        """if entered char is not a digit return false"""
         return False
     else:
         return True
@@ -24,8 +22,7 @@ def validateIP(char, entry_value):
     chars=entry_value[:-1] #Selects all the text in the textbox except the last character
     if (not char.isdigit() and not "." in char) or (chars.count(".")>2 and "." in char):
         """if entered char is not a digit or is not "." or is not "-" then return false.
-           If the entered char is "." and there is already a "." in text, return false.
-           If the entered char is "-" and there is already a "-" in text, return false"""
+           If the entered char is "." and there is already 2 or more "." in text, return false."""
         return False
     else:
         return True
@@ -47,12 +44,14 @@ root.resizable(width=False, height=False)
 vcmdPort = (root.register(validatePort), '%S', '%P')
 vcmdIp = (root.register(validateIP), '%S', '%P')
 
-ipText=Entry(root, bg="cyan",width=50, validatecommand=vcmdIp, validate = 'key')
+ipText=Entry(root, bg="cyan",width=50)
 ipText.pack()
+ipText.insert(END, IP)
+ipText.config(validate='key', validatecommand=vcmdIp)
 
 portText=Entry(root, bg="cyan",width=50, validatecommand=vcmdPort, validate = 'key')
 portText.pack()
-portText.insert(END, str(PORT))
+portText.insert(END, str(1234))
 
 sendButton=Button(root, text="Enter", command=lambda: getIPPort(ipText, portText, root), width=50)
 sendButton.pack()
