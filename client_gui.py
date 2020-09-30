@@ -44,16 +44,16 @@ root.resizable(width=False, height=False)
 vcmdPort = (root.register(validatePort), '%S', '%P')
 vcmdIp = (root.register(validateIP), '%S', '%P')
 
-ipText=Entry(root, bg="cyan",width=50)
-ipText.pack()
-ipText.insert(END, IP)
-ipText.config(validate='key', validatecommand=vcmdIp)
+usernameText=Entry(root, bg="cyan",width=50)
+usernameText.pack()
+usernameText.insert(END, IP)
+usernameText.config(validate='key', validatecommand=vcmdIp)
 
 portText=Entry(root, bg="cyan",width=50, validatecommand=vcmdPort, validate = 'key')
 portText.pack()
 portText.insert(END, str(1234))
 
-sendButton=Button(root, text="Enter", command=lambda: getIPPort(ipText, portText, root), width=50)
+sendButton=Button(root, text="Enter", command=lambda: getIPPort(usernameText, portText, root), width=50)
 sendButton.pack()
 
 root.mainloop()
@@ -68,10 +68,10 @@ def getUsername(usernameText:Text, root:Tk):
 root=Tk()
 root.resizable(width=False,height=False)
 
-ipText=Text(root, bg="cyan", height=1,width=50)
-ipText.pack()
+usernameText=Text(root, bg="cyan", height=1,width=50)
+usernameText.pack()
 
-sendButton=Button(root, text="Enter", command=lambda: getUsername(ipText, root), width=50)
+sendButton=Button(root, text="Enter", command=lambda: getUsername(usernameText, root), width=50)
 sendButton.pack()
 
 root.mainloop()

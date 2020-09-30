@@ -42,11 +42,11 @@ class App:
             else:
                 return True
 
-        def getIPPort(ipText:Entry, portText:Entry, root:Tk):
-            if ipText.get():
-                self.IP=ipText.get()
-            if portText.get():
-                self.PORT=int(portText.get())
+        def getIPPort(entry_ip:Entry, entry_port:Entry, root:Tk):
+            if entry_ip.get():
+                self.IP=entry_ip.get()
+            if entry_port.get():
+                self.PORT=int(entry_port.get())
             else:
                 self.PORT=0
             if self.IP!="":
@@ -67,17 +67,17 @@ class App:
         label_port=Label(root, text="Port")
         label_port.grid(row=1)
 
-        ipText=Entry(root,width=50)
-        ipText.grid(row=0,column=1)
-        ipText.insert(END, self.IP)
-        ipText.config(validate='key', validatecommand=vcmdIp)
+        entry_ip=Entry(root,width=50)
+        entry_ip.grid(row=0,column=1)
+        entry_ip.insert(END, self.IP)
+        entry_ip.config(validate='key', validatecommand=vcmdIp)
 
-        portText=Entry(root,width=50, validatecommand=vcmdPort, validate = 'key')
-        portText.grid(row=1,column=1)
-        portText.insert(END, str(self.PORT))
+        entry_port=Entry(root,width=50, validatecommand=vcmdPort, validate = 'key')
+        entry_port.grid(row=1,column=1)
+        entry_port.insert(END, str(self.PORT))
 
-        sendButton=Button(root, text="Enter", command=lambda: getIPPort(ipText, portText, root), width=20)
-        sendButton.grid(columnspan=2)
+        button_send=Button(root, text="Enter", command=lambda: getIPPort(entry_ip, entry_port, root), width=20)
+        button_send.grid(columnspan=2)
 
         root.mainloop()
 
@@ -86,6 +86,7 @@ class App:
             self.client_socket=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.client_socket.connect((self.IP, self.PORT))
             self.client_socket.setblocking(False)
+            print(f"Connected to {self.IP}:{self.PORT}")
             return True
         except IOError as e:
             if e.errno != errno.EAGAIN and e.errno!=errno.EWOULDBLOCK:
@@ -94,8 +95,8 @@ class App:
                 return False
 
     def getUsername(self):
-        def getUsername(usernameText:Entry, root:Tk):
-            username=usernameText.get()
+        def getUsername(entry_username:Entry, root:Tk):
+            username=entry_username.get()
             if username!="":
                 my_username=username
                 root.destroy()
@@ -108,11 +109,11 @@ class App:
         label_username=Label(root, text="Username")
         label_username.grid(row=0)
 
-        ipText=Entry(root,width=50)
-        ipText.grid(row=0,column=1)
+        entry_username=Entry(root,width=50)
+        entry_username.grid(row=0,column=1)
 
-        sendButton=Button(root, text="Enter", command=lambda: getUsername(ipText, root), width=20)
-        sendButton.grid(columnspan=2)
+        button_send=Button(root, text="Enter", command=lambda: getUsername(entry_username, root), width=20)
+        button_send.grid(columnspan=2)
 
         root.mainloop()
     
@@ -122,10 +123,10 @@ class App:
         self.client_socket.send(username_header+self.username)
         self.startGUI()
 
-    def sendMessage(self, messageText:Text):
-        message=messageText.get("1.0", END).strip()
+    def sendMessage(self, text_message:Text):
+        message=text_message.get("1.0", END).strip()
         if message:
-            messageText.delete("1.0", END)
+            text_message.delete("1.0", END)
             message=message.encode('utf-8')
             message_header=f"{len(message):<{self.HEADER_LENGTH}}".encode('utf-8')
             self.client_socket.send(message_header+message)
@@ -136,20 +137,20 @@ class App:
         root.geometry('{}x{}'.format(480, 640))
         root.resizable(width=False, height=False)
 
-        chatText=Text(root, bg="grey43", height=30)
-        chatText.pack(pady=(0,10))
-        chatText.config(state=DISABLED)
+        text_chat=Text(root, bg="grey43", height=30)
+        text_chat.pack(pady=(0,10))
+        text_chat.config(state=DISABLED)
 
-        messageText=Text(root, bg="grey43", height=7)
-        messageText.pack()
+        text_message=Text(root, bg="grey43", height=7)
+        text_message.pack()
 
-        sendButton=Button(root, text="Send", width=480, height=3, command=lambda: self.sendMessage(messageText))
-        sendButton.pack()
+        button_send=Button(root, text="Send", width=480, height=3, command=lambda: self.sendMessage(text_message))
+        button_send.pack()
 
-        self.update_clock(root, chatText)
+        self.update_clock(root, text_chat)
         root.mainloop()
 
-    def update_clock(self, root, chatText):
+    def update_clock(self, root, text_chat):
         try:
             username_header=self.client_socket.recv(self.HEADER_LENGTH)
             if not len(username_header):
@@ -163,16 +164,16 @@ class App:
             message_length=int(message_header.decode('utf-8').strip())
             message=self.client_socket.recv(message_length).decode('utf-8')
 
-            chatText.config(state=NORMAL)
-            chatText.insert(END, f"{username} > {message}\n")
-            chatText.config(state=DISABLED)
+            text_chat.config(state=NORMAL)
+            text_chat.insert(END, f"{username} > {message}\n")
+            text_chat.config(state=DISABLED)
         except IOError as e:
             if e.errno != errno.EAGAIN and e.errno!=errno.EWOULDBLOCK:
                 print('Reading Error', str(e))
                 sys.exit()
         except:
             pass
-        root.after(50, lambda: self.update_clock(root, chatText))
+        root.after(50, lambda: self.update_clock(root, text_chat))
 
 if __name__ == "__main__":
     app=App()
